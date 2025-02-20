@@ -49,4 +49,5 @@ class PepParsePipeline:
         file_path = results_dir / file_name
         with open(file_path, 'w', encoding='utf-8') as f:
             writer = csv.writer(f, dialect='unix')
-            writer.writerows(results)
+            writer.writerows(
+            )

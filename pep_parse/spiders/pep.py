@@ -5,9 +5,11 @@ from pep_parse.settings import PEP_ALLOWED_DOMAINS, PEP_NAME, PEP_START_URLS
 
 
 class PepSpider(scrapy.Spider):
-    name = 'pep'
-    allowed_domains = ['peps.python.org']
-    start_urls = ['http://peps.python.org/']
+    """Паук для парсинга PEP с сайта peps.python.org."""
+
+    name = PEP_NAME
+    allowed_domains = PEP_ALLOWED_DOMAINS
+    start_urls = PEP_START_URLS
 
     def parse(self, response):
         """
