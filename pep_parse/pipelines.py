@@ -6,7 +6,7 @@ from scrapy.exceptions import DropItem
 
 from pep_parse.settings import (
     BASE_DIR, DATETIME_FORMAT, RESULTS_DIR, TABLE_HEADERS, TABLE_TOTAL
-    )
+)
 
 
 class PepParsePipeline:
@@ -44,8 +44,8 @@ class PepParsePipeline:
             csv.writer(
                 f,
                 dialect='unix',
-            ).writerows(
+            ).writerows([
                 TABLE_HEADERS,
                 *self.pep_status_counts.items(),
                 (TABLE_TOTAL, sum(self.pep_status_counts.values()))
-            )
+            ])
