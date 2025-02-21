@@ -1,23 +1,23 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
-
-# useful for handling different item types with a single interface
 import csv
 import datetime as dt
 from collections import defaultdict
 
 from scrapy.exceptions import DropItem
 
-from pep_parse.settings import BASE_DIR, DATETIME_FORMAT, RESULTS_DIR
+from pep_parse.settings import (
+    BASE_DIR, DATETIME_FORMAT, RESULTS_DIR, TABLE_HEADERS, TABLE_TOTAL
+    )
 
 
 class PepParsePipeline:
     """
     Pipeline для подсчета статусов PEP и сохранения результатов в CSV-файл.
     """
+
+    def __init__(self):
+        self.results_dir = BASE_DIR / RESULTS_DIR
+        self.results_dir.mkdir(exist_ok=True)
+
     def open_spider(self, spider):
         """
         Инициализирует словарь для подсчета статусов PEP при открытии паука.
@@ -37,17 +37,15 @@ class PepParsePipeline:
         Сохраняет результаты подсчета статусов PEP в CSV-файл
         при закрытии паука.
         """
-        results_dir = BASE_DIR / RESULTS_DIR
-        results_dir.mkdir(exist_ok=True)
-
-        results = [('Статус', 'Количество')]
-        status_count_pairs = list(self.pep_status_counts.items())
-        results.extend(status_count_pairs)
-        results.append(('Total', sum(self.pep_status_counts.values())))
         now_format_time = dt.datetime.now().strftime(DATETIME_FORMAT)
         file_name = f'status_summary_{now_format_time}.csv'
-        file_path = results_dir / file_name
+        file_path = self.results_dir / file_name
         with open(file_path, 'w', encoding='utf-8') as f:
-            writer = csv.writer(f, dialect='unix')
-            writer.writerows(
+            csv.writer(
+                f,
+                dialect='unix',
+            ).writerows(
+                TABLE_HEADERS,
+                *self.pep_status_counts.items(),
+                (TABLE_TOTAL, sum(self.pep_status_counts.values()))
             )
